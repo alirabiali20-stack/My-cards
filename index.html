@@ -1,0 +1,1005 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="theme-color" content="#16a34a">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+<title>Ali Cards Platform — APP UI</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet" />
+
+<style>
+:root{
+  --rightBg:#13a7b7;
+  --leftBg:#ffffff;
+  --cardText:#ffffff;
+  --leftText:#111111;
+  --leftPattern:none;
+  --rightPattern:none;
+}
+
+*{box-sizing:border-box}
+html,body{
+  margin:0;padding:0;
+  font-family:'Cairo',sans-serif;
+  background:#0b1220;
+  min-height:100%;
+}
+
+/* ===== Splash ===== */
+#welcomeScreen{
+  position:fixed; inset:0;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  z-index:999;
+  text-align:center;
+  padding:18px;
+  color:#fff;
+  overflow:hidden;
+  background: radial-gradient(1200px 800px at 50% -10%, rgba(255,255,255,.20), transparent 60%),
+              linear-gradient(135deg,#0b1220 0%, #0b1220 40%, #0b1220 100%);
+}
+.splashFlag{
+  position:absolute; inset:-40%;
+  background: linear-gradient(90deg,#16a34a,#ffffff,#ef4444);
+  opacity:.18;
+  filter: blur(16px);
+  transform: rotate(12deg);
+  animation: splashMove 3.2s ease-in-out infinite;
+
+  /* ✅ أهم إصلاح: لا تلتقط اللمس */
+  pointer-events:none;
+}
+@keyframes splashMove{
+  0%{transform:rotate(12deg) translateX(-4%)}
+  50%{transform:rotate(12deg) translateX(4%)}
+  100%{transform:rotate(12deg) translateX(-4%)}
+}
+#welcomeScreen .title{
+  font-size:2.4rem; font-weight:900; line-height:1.1;
+  margin:0 0 10px;
+  text-shadow:0 14px 30px rgba(0,0,0,.45);
+  position:relative;
+  z-index:2;
+}
+#welcomeScreen .sub{
+  margin:0 0 18px;
+  font-weight:800;
+  color:rgba(255,255,255,.75);
+  position:relative;
+  z-index:2;
+}
+#welcomeScreen button{
+  padding:14px 26px;
+  font-size:1.15rem;
+  cursor:pointer;
+  border:none;
+  border-radius:16px;
+  color:#0b1220;
+  font-weight:900;
+  background: linear-gradient(90deg,#16a34a,#ffffff,#ef4444);
+  box-shadow:0 14px 35px rgba(0,0,0,.45);
+  position:relative;
+  z-index:2;
+}
+#welcomeScreen button:active{ transform:scale(.98); }
+
+/* ===== App Shell ===== */
+.app{
+  display:none;
+  min-height:100vh;
+  background:#f2f4f7;
+  padding-bottom: calc(86px + env(safe-area-inset-bottom));
+}
+
+/* Top Bar */
+.topBar{
+  position:sticky; top:0; z-index:50;
+  padding: 14px 14px calc(12px + env(safe-area-inset-top));
+  background: rgba(255,255,255,.78);
+  backdrop-filter: blur(12px);
+  border-bottom:1px solid rgba(0,0,0,.06);
+  display:flex; align-items:center; justify-content:space-between;
+}
+.brand{display:flex; gap:10px; align-items:center;}
+.brandMark{
+  width:42px;height:42px;border-radius:16px;
+  background: linear-gradient(135deg,#16a34a,#ffffff,#ef4444);
+  box-shadow:0 12px 24px rgba(0,0,0,.14);
+}
+.brandTitle{font-weight:900;color:#111827;line-height:1}
+.brandSub{font-weight:900;color:rgba(17,24,39,.55);font-size:.85rem;margin-top:2px}
+.flagPulse{
+  width:46px;height:46px;border-radius:18px;
+  background: linear-gradient(90deg,#16a34a,#ffffff,#ef4444);
+  box-shadow:0 12px 24px rgba(0,0,0,.14);
+  animation: flagPulse 2.6s ease-in-out infinite;
+}
+@keyframes flagPulse{
+  0%{transform:translateY(0); filter:saturate(1)}
+  50%{transform:translateY(-2px); filter:saturate(1.25)}
+  100%{transform:translateY(0); filter:saturate(1)}
+}
+
+/* Layout */
+.content{
+  padding:12px;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+
+/* Card Panel */
+.panel{
+  background:#fff;
+  border-radius:18px;
+  padding:14px;
+  box-shadow:0 10px 25px rgba(0,0,0,.10);
+  border:1px solid rgba(0,0,0,.06);
+}
+.panelTitle{
+  margin:0 0 10px;
+  font-weight:900;
+  color:#111827;
+  font-size:1.02rem;
+}
+
+/* ===== Card ===== */
+.card{
+  width:min(560px,96vw);
+  margin:0 auto;
+  height:270px;
+  display:flex;
+  border-radius:16px;
+  overflow:hidden;
+  box-shadow:0 16px 38px rgba(0,0,0,.18);
+  background:#fff;
+  border:1px solid rgba(0,0,0,.06);
+}
+.left{
+  width:42%;
+  padding:14px 12px;
+  position:relative;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:flex-start;
+  gap:10px;
+  background:var(--leftBg);
+  color:var(--leftText);
+}
+.left:before{
+  content:""; position:absolute; inset:-30px;
+  opacity:.28;
+  background-image:var(--leftPattern);
+  background-size:80px 80px;
+  background-repeat:repeat;
+  transform:rotate(-12deg);
+  pointer-events:none;
+}
+.logoBox{
+  width:92px; height:92px;
+  border-radius:18px;
+  background:#f3f6ff;
+  display:flex; align-items:center; justify-content:center;
+  overflow:hidden;
+  border:1px solid rgba(0,0,0,.10);
+  z-index:1;
+}
+.logoBox img{width:100%;height:100%;object-fit:cover;display:none}
+.left h3{margin:0;font-size:20px;font-weight:900;z-index:1}
+.left p{margin:0;font-size:13px;font-weight:800;color:rgba(0,0,0,.65);z-index:1}
+
+.right{
+  width:58%;
+  padding:14px 14px 12px;
+  position:relative;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  background:var(--rightBg);
+  color:var(--cardText);
+}
+.right:before{
+  content:""; position:absolute; inset:-30px;
+  opacity:.18;
+  background-image:var(--rightPattern);
+  background-size:90px 90px;
+  background-repeat:repeat;
+  transform:rotate(-12deg);
+  pointer-events:none;
+}
+.topRow{
+  display:flex; justify-content:space-between; align-items:flex-start; gap:10px;
+  position:relative; z-index:1;
+}
+.titleAr{margin:0;font-size:22px;font-weight:900;line-height:1.1}
+.titleFr{margin:2px 0 0;font-size:14px;font-weight:900;opacity:.95}
+.icon{
+  width:44px;height:44px;border-radius:14px;
+  background:rgba(255,255,255,.18);
+  border:1px solid rgba(255,255,255,.18);
+  display:flex;align-items:center;justify-content:center;
+  flex:0 0 auto;
+}
+#templateEmoji{font-size:22px;line-height:1}
+.services{
+  font-size:11.5px; line-height:1.45; opacity:.95;
+  position:relative; z-index:1;
+}
+.footer{
+  margin-top:auto;
+  display:grid;
+  grid-template-columns:1fr auto;
+  gap:10px;
+  align-items:end;
+  position:relative; z-index:1;
+}
+.lines{display:flex;flex-direction:column;gap:6px;font-size:12px;font-weight:900}
+.line{
+  display:flex; align-items:center; gap:8px;
+  padding:7px 10px;
+  border-radius:12px;
+  background:rgba(255,255,255,.14);
+  border:1px solid rgba(255,255,255,.12);
+}
+.line small{font-weight:900;letter-spacing:.2px;word-break:break-word}
+.qrBox{
+  background:#fff;
+  padding:10px;
+  border-radius:14px;
+  box-shadow:0 12px 26px rgba(0,0,0,.22);
+  border:2px solid rgba(0,0,0,.12);
+  display:flex; align-items:center; justify-content:center;
+}
+#qrcode{ width:120px; height:120px; }
+#qrcode img, #qrcode canvas{ display:block; }
+
+@media(max-width:520px){
+  .card{height:auto}
+  .footer{grid-template-columns:1fr;align-items:start}
+  .qrBox{width:max-content}
+}
+
+/* ===== Form ===== */
+.field{margin:10px 0}
+label{
+  display:block; margin:0 0 6px;
+  font-size:.92rem; font-weight:900; color:#111827;
+}
+input,textarea,select{
+  width:100%;
+  padding:11px 12px;
+  border-radius:12px;
+  border:1px solid rgba(0,0,0,.12);
+  outline:none;
+  background:#fff;
+  font-family:'Cairo',sans-serif;
+}
+textarea{min-height:92px; resize:vertical}
+
+.pickers{display:grid;gap:10px;margin-top:8px}
+.pickerRow{
+  display:flex; align-items:center; justify-content:space-between; gap:10px;
+  padding:10px 12px;
+  border-radius:14px;
+  background:#f7f7f9;
+  border:1px solid rgba(0,0,0,.06);
+}
+.pickerRow label{margin:0;font-size:.92rem}
+.pickerRow select{width:52%}
+
+/* Bottom Bar */
+.bottomBar{
+  position:fixed; left:0; right:0; bottom:0;
+  z-index:60;
+  padding:10px 12px calc(10px + env(safe-area-inset-bottom));
+  background: rgba(255,255,255,.84);
+  backdrop-filter: blur(14px);
+  border-top:1px solid rgba(0,0,0,.06);
+  display:flex; gap:10px;
+}
+.navBtn{
+  flex:1;
+  border:none;
+  border-radius:16px;
+  padding:12px 10px;
+  font-family:'Cairo',sans-serif;
+  font-weight:900;
+  background:#111827;
+  color:#fff;
+  display:flex; gap:8px; align-items:center; justify-content:center;
+  box-shadow:0 12px 24px rgba(0,0,0,.14);
+  cursor:pointer;
+}
+.navBtn:active{transform:scale(.98)}
+.navPrimary{background:linear-gradient(45deg,#22c55e,#16a34a)}
+.navWarn{background:linear-gradient(45deg,#ff9800,#ff3d00)}
+.ico{font-size:1.1rem}
+
+/* Contacts */
+.contacts{
+  display:flex;
+  justify-content:center;
+  gap:14px;
+  margin-top:10px;
+  font-size:1.9rem;
+}
+.contacts a{text-decoration:none; transition:transform .2s ease}
+.contacts a:hover{transform:scale(1.12)}
+
+.note{
+  margin-top:10px;
+  font-size:.92rem;
+  color:rgba(17,24,39,.7);
+  font-weight:800;
+}
+
+/* ===== Auth Overlay ===== */
+.overlay{
+  position:fixed; inset:0;
+  display:flex; align-items:center; justify-content:center;
+  background:rgba(0,0,0,.55);
+  z-index:9999;
+  padding:18px;
+}
+.authCard{
+  width:min(520px, 100%);
+  background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.16);
+  border-radius:18px;
+  box-shadow:0 18px 50px rgba(0,0,0,.35);
+  padding:18px;
+  backdrop-filter: blur(14px);
+}
+.authHeader{margin-bottom:12px}
+.authTitle{
+  font-weight:900;
+  font-size:22px;
+  color:#fff;
+}
+.authHint{
+  margin-top:6px;
+  color:rgba(255,255,255,.78);
+  font-size:13px;
+  line-height:1.6;
+}
+.authTabs{
+  display:flex; gap:10px;
+  margin:12px 0 10px;
+}
+.tabBtn{
+  flex:1;
+  padding:10px 12px;
+  border-radius:12px;
+  border:1px solid rgba(255,255,255,.18);
+  background:rgba(255,255,255,.10);
+  color:#fff;
+  font-weight:800;
+}
+.tabBtn.active{
+  background:rgba(255,255,255,.22);
+}
+.authLabel{
+  display:block;
+  margin:10px 0 6px;
+  color:rgba(255,255,255,.85);
+  font-size:13px;
+  font-weight:700;
+}
+.authInput{
+  width:100%;
+  padding:12px 12px;
+  border-radius:12px;
+  border:1px solid rgba(255,255,255,.16);
+  background:rgba(0,0,0,.18);
+  color:#fff;
+  outline:none;
+}
+.authInput:focus{ border-color: rgba(22,163,74,.75); }
+.authBtn{
+  width:100%;
+  margin-top:12px;
+  padding:12px 14px;
+  border-radius:14px;
+  border:none;
+  background:#16a34a;
+  color:#fff;
+  font-weight:900;
+}
+.authBtn.ghost{
+  background:rgba(255,255,255,.12);
+  border:1px solid rgba(255,255,255,.18);
+}
+.authMsg{
+  margin-top:10px;
+  color:rgba(255,255,255,.9);
+  font-size:13px;
+  line-height:1.6;
+}
+.smallNote{
+  margin-top:10px;
+  color:rgba(255,255,255,.75);
+  font-size:12px;
+  line-height:1.7;
+}
+
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+</head>
+
+<body>
+
+<!-- Splash -->
+<div id="welcomeScreen">
+  <div class="splashFlag" aria-hidden="true"></div>
+  
+
+<h1 class="title">قوالب Ali.dz</h1>
+  <p class="sub">مولّد بطاقات احترافي + QR + ألوان</p>
+
+  <!-- ✅ onclick مضمون حتى في WebView -->
+  <button id="enterBtn" type="button" onclick="enterApp()">دخول</button>
+</div>
+
+
+
+<!-- Auth -->
+<div id="authScreen" class="overlay">
+  <div class="authCard">
+    <div class="authHeader">
+      <div class="authTitle">تسجيل الدخول</div>
+      <div class="authHint">الاشتراك سنوي — التفعيل يتم من الإدارة</div>
+    </div>
+
+    <div class="authTabs">
+      <button type="button" class="tabBtn active" data-tab="loginTab">دخول</button>
+      <button type="button" class="tabBtn" data-tab="registerTab">إنشاء حساب</button>
+    </div>
+
+    <!-- Login -->
+    <div id="loginTab" class="tabPane">
+      <label class="authLabel">البريد الإلكتروني</label>
+      <input id="loginEmail" class="authInput" type="email" placeholder="name@example.com" autocomplete="email" />
+
+      <label class="authLabel">كلمة المرور</label>
+      <input id="loginPass" class="authInput" type="password" placeholder="••••••••" autocomplete="current-password" />
+
+      <button id="loginBtn" type="button" class="authBtn">دخول</button>
+      <button id="logoutBtn1" type="button" class="authBtn ghost" style="display:none">تسجيل خروج</button>
+      <div id="authMsg" class="authMsg"></div>
+    </div>
+
+    <!-- Register -->
+    <div id="registerTab" class="tabPane" style="display:none">
+      <label class="authLabel">الاسم (اختياري)</label>
+      <input id="regName" class="authInput" type="text" placeholder="اسمك" autocomplete="name" />
+
+      <label class="authLabel">البريد الإلكتروني</label>
+      <input id="regEmail" class="authInput" type="email" placeholder="name@example.com" autocomplete="email" />
+
+      <label class="authLabel">كلمة المرور</label>
+      <input id="regPass" class="authInput" type="password" placeholder="••••••••" autocomplete="new-password" />
+
+      <button id="registerBtn" type="button" class="authBtn">إنشاء حساب</button>
+      <div class="smallNote">بعد الإنشاء سيظهر لك: <b>بانتظار التفعيل</b>. أنا أقوم بتفعيل الحساب بعد الدفع.</div>
+      <div id="regMsg" class="authMsg"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Pending -->
+<div id="pendingScreen" class="overlay" style="display:none">
+  <div class="authCard">
+    <div class="authTitle">⏳ حسابك قيد المراجعة</div>
+    <div class="authHint">تم إنشاء الحساب بنجاح. بعد الدفع سأقوم بتفعيل اشتراكك السنوي.</div>
+    <button id="logoutBtn2" type="button" class="authBtn ghost">تسجيل خروج</button>
+  </div>
+</div>
+
+<!-- Expired -->
+<div id="expiredScreen" class="overlay" style="display:none">
+  <div class="authCard">
+    <div class="authTitle">⚠️ الاشتراك منتهي</div>
+    <div class="authHint">اشتراكك غير نشط أو انتهت صلاحيته. تواصل معي لتجديده.</div>
+    <button id="logoutBtn3" type="button" class="authBtn ghost">تسجيل خروج</button>
+  </div>
+</div>
+
+
+<!-- App -->
+<div class="app" id="mainApp">
+  <header class="topBar">
+    <div class="brand">
+      <div class="brandMark"></div>
+      <div>
+        <div class="brandTitle">Ali Cards</div>
+        <div class="brandSub">تصميم تطبيق احترافي</div>
+      </div>
+    </div>
+    <div class="flagPulse" aria-hidden="true"></div>
+  </header>
+
+  <div class="content">
+
+    <!-- Card Preview -->
+    <section class="panel">
+      <h3 class="panelTitle">المعاينة</h3>
+
+      <div class="card" id="card">
+        <div class="left">
+          <div class="logoBox"><img id="logoPreview" alt="logo" /></div>
+          <h3 id="personDisplay">ALI DZ</h3>
+          <p id="jobDisplay">DIGITAL CREATOR</p>
+        </div>
+
+        <div class="right">
+          <div class="topRow">
+            <div class="titleBlock">
+              <h2 class="titleAr" id="companyDisplay">Ali.dz</h2>
+              <p class="titleFr" id="companyDisplay2">Service Online</p>
+            </div>
+            <div class="icon"><span id="templateEmoji">🐾</span></div>
+          </div>
+
+          <div class="services" id="descDisplay">Service online<br>Education<br>Payment</div>
+
+          <div class="footer">
+            <div class="lines">
+              <div class="line"><span>📞</span><small id="phoneDisplay">0671720653</small></div>
+              <div class="line"><span>ⓕ</span><small id="fbDisplay">Ali.dz</small></div>
+              <div class="line"><span>📍</span><small id="addrDisplay">CITE TIARET</small></div>
+            </div>
+            <div class="qrBox"><div id="qrcode" aria-label="QR"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="note" id="qrNote">—</div>
+    </section>
+
+    <!-- Form -->
+    <section class="panel">
+      <h3 class="panelTitle">البيانات والإعدادات</h3>
+
+      <div class="field">
+        <label>مجال المؤسسة (يرمز + Pattern)</label>
+        <select id="templateSelect">
+          <option value="">بدون</option>
+          <option value="vet" selected>بيطري</option>
+          <option value="hair">حلاقة</option>
+          <option value="law">محاماة</option>
+          <option value="clinic">عيادة</option>
+          <option value="pharmacy">صيدلة</option>
+          <option value="dentist">طب أسنان</option>
+          <option value="mechanic">ميكانيكي</option>
+          <option value="plumber">سباكة</option>
+          <option value="construction">بناء</option>
+          <option value="translation">ترجمة</option>
+          <option value="wedding">زفاف</option>
+          <option value="sweets">حلويات</option>
+          <option value="glass">زجاج</option>
+          <option value="oilSale">زيوت</option>
+          <option value="tech">تقنية</option>
+          <option value="realestate">عقارات</option>
+          <option value="restaurant">مطعم</option>
+          <option value="education">تعليم</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>QR: الصق رابط خرائط أو صفحة (إذا فارغ ⇒ vCard)</label>
+        <input id="qrAny" placeholder="maps.app.goo.gl/... أو facebook.com/..." />
+      </div>
+
+      <div class="field"><label>اسم المؤسسة (AR)</label><input id="company" placeholder="Ali.dz"></div>
+      <div class="field"><label>اسم المؤسسة (FR/EN)</label><input id="company2" placeholder="Service Online"></div>
+      <div class="field"><label>اسم الشخص</label><input id="person" placeholder="ALI DZ"></div>
+      <div class="field"><label>المنصب</label><input id="job" placeholder="DIGITAL CREATOR"></div>
+      <div class="field"><label>الهاتف</label><input id="phone" placeholder="0671720653"></div>
+      <div class="field"><label>فيسبوك (اسم أو رابط)</label><input id="fb" placeholder="Ali.dz"></div>
+      <div class="field"><label>العنوان</label><input id="addr" placeholder="CITE TIARET"></div>
+      <div class="field"><label>وصف الخدمات</label><textarea id="desc" placeholder="سطر لكل خدمة"></textarea></div>
+
+      <div class="field">
+        <label>رفع شعار</label>
+        <input id="logoInput" type="file" accept="image/*" />
+      </div>
+
+      <div class="pickers">
+        <div class="pickerRow">
+          <label>لون الجهة اليمنى</label>
+          <select id="rightColorSelect">
+            <option value="#13a7b7" selected>تركواز</option>
+            <option value="#2563eb">أزرق</option>
+            <option value="#16a34a">أخضر</option>
+            <option value="#ef4444">أحمر</option>
+            <option value="#f59e0b">برتقالي</option>
+            <option value="#0f172a">داكن</option>
+          </select>
+        </div>
+
+        <div class="pickerRow">
+          <label>لون الجهة اليسرى</label>
+          <select id="leftColorSelect">
+            <option value="#ffffff" selected>أبيض</option>
+            <option value="#f3f4f6">رمادي فاتح</option>
+            <option value="#ffe8e8">وردي فاتح</option>
+            <option value="#e8fff0">أخضر فاتح</option>
+          </select>
+        </div>
+
+        <div class="pickerRow">
+          <label>لون نص الجهة اليمنى</label>
+          <select id="textColorSelect">
+            <option value="#ffffff" selected>أبيض</option>
+            <option value="#0b1220">داكن</option>
+            <option value="#fffbeb">فاتح جدًا</option>
+            <option value="#ffd54a">ذهبي</option>
+          </select>
+        </div>
+
+        <div class="pickerRow">
+          <label>لون نص الجهة اليسرى</label>
+          <select id="leftTextColorSelect">
+            <option value="#111111" selected>داكن</option>
+            <option value="#0f172a">داكن جدًا</option>
+            <option value="#2563eb">أزرق</option>
+            <option value="#16a34a">أخضر</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="contacts">
+        <a href="https://wa.me/2136671720653" target="_blank" style="color:#25D366;">📱</a>
+        <a href="mailto:algeriancitizen14@gmail.com" style="color:#D44638;">✉️</a>
+        <a href="https://www.facebook.com/profile.php?id=61586367822913" target="_blank" style="color:#1877F2;">📘</a>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Bottom Bar -->
+  <nav class="bottomBar">
+    <button class="navBtn navPrimary" id="updateBtn" type="button"><span class="ico">✅</span><span>تحديث</span></button>
+    <button class="navBtn navWarn" id="downloadBtn" type="button"><span class="ico">⬇️</span><span>PNG</span></button>
+    <button class="navBtn" id="shareBtn" type="button"><span class="ico">🔗</span><span>مشاركة</span></button>
+  </nav>
+</div>
+
+<!-- QR library local then CDN fallback -->
+<script src="qrcode.min.js"></script>
+<script>
+
+/* ===== Supabase Auth + Subscription Gate ===== */
+const SUPABASE_URL = "https://yshhngvmrlylciorxxcy.supabase.co";
+const SUPABASE_KEY = "sb_publishable_lp_6QF1WBpC1fEPq9WSrwQ_ymAfc-Z_";
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+function showOnly(whichId){
+  const ids = ["authScreen","pendingScreen","expiredScreen","welcomeScreen","mainApp"];
+  ids.forEach(id=>{
+    const el = document.getElementById(id);
+    if(!el) return;
+    el.style.display = (id===whichId) ? "" : "none";
+  });
+}
+
+function setMsg(id, text){
+  const el=document.getElementById(id);
+  if(el) el.innerHTML = text || "";
+}
+
+async function signOutAll(){
+  try{ await sb.auth.signOut(); }catch(e){}
+  location.reload();
+}
+
+async function gateUser(){
+  const { data: { session } } = await sb.auth.getSession();
+  if(!session) return { ok:false, reason:"no_session" };
+
+  const uid = session.user.id;
+
+  const { data: profile, error: e1 } = await sb
+    .from("profiles")
+    .select("is_approved,email,full_name")
+    .eq("id", uid)
+    .single();
+  if(e1) return { ok:false, reason:"profile_error", error:e1 };
+
+  const { data: sub, error: e2 } = await sb
+    .from("subscriptions")
+    .select("status,expires_at,plan")
+    .eq("user_id", uid)
+    .single();
+  if(e2) return { ok:false, reason:"sub_error", error:e2 };
+
+  const now = new Date();
+  const expires = sub?.expires_at ? new Date(sub.expires_at) : null;
+
+  if(!profile.is_approved) return { ok:false, reason:"pending" };
+  if(!expires || expires <= now) return { ok:false, reason:"expired" };
+  if(sub.status !== "active") return { ok:false, reason:"inactive" };
+
+  return { ok:true, profile, sub };
+}
+
+function setupAuthUI(){
+  const tabs = document.querySelectorAll(".tabBtn");
+  tabs.forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      tabs.forEach(b=>b.classList.remove("active"));
+      btn.classList.add("active");
+      const target = btn.getAttribute("data-tab");
+      ["loginTab","registerTab"].forEach(id=>{
+        const pane=document.getElementById(id);
+        if(pane) pane.style.display = (id===target) ? "" : "none";
+      });
+      setMsg("authMsg","");
+      setMsg("regMsg","");
+    });
+  });
+
+  const loginBtn = document.getElementById("loginBtn");
+  const registerBtn = document.getElementById("registerBtn");
+
+  if(loginBtn){
+    loginBtn.addEventListener("click", async ()=>{
+      setMsg("authMsg","جاري تسجيل الدخول...");
+      try{
+        const email = (document.getElementById("loginEmail").value||"").trim();
+        const password = document.getElementById("loginPass").value||"";
+        const { error } = await sb.auth.signInWithPassword({ email, password });
+        if(error) throw error;
+        const g = await gateUser();
+        if(g.ok) {
+          showOnly("welcomeScreen");
+        } else if(g.reason==="pending") {
+          showOnly("pendingScreen");
+        } else {
+          showOnly("expiredScreen");
+        }
+      }catch(err){
+        setMsg("authMsg", "❌ " + (err?.message || "فشل تسجيل الدخول"));
+      }
+    });
+  }
+
+  if(registerBtn){
+    registerBtn.addEventListener("click", async ()=>{
+      setMsg("regMsg","جاري إنشاء الحساب...");
+      try{
+        const full_name = (document.getElementById("regName").value||"").trim();
+        const email = (document.getElementById("regEmail").value||"").trim();
+        const password = document.getElementById("regPass").value||"";
+        const { error } = await sb.auth.signUp({
+          email,
+          password,
+          options: { data: { full_name } }
+        });
+        if(error) throw error;
+
+        // ملاحظة: إذا Email confirmations مفعّلة، سيحتاج المستخدم تأكيد البريد أولاً.
+        setMsg("regMsg","✅ تم إنشاء الحساب. سجّل دخولك الآن. (إذا طُلب تأكيد البريد، افتح الإيميل وفعّل الحساب)");
+        document.querySelector('[data-tab="loginTab"]').click();
+      }catch(err){
+        setMsg("regMsg", "❌ " + (err?.message || "فشل إنشاء الحساب"));
+      }
+    });
+  }
+
+  ["logoutBtn1","logoutBtn2","logoutBtn3"].forEach(id=>{
+    const b=document.getElementById(id);
+    if(b) b.addEventListener("click", signOutAll);
+  });
+}
+
+window.addEventListener("load", async ()=>{
+  setupAuthUI();
+  // افترض أن التطبيق مغلق حتى يتم التحقق
+  showOnly("authScreen");
+
+  try{
+    const g = await gateUser();
+    if(!g.ok){
+      if(g.reason==="pending") showOnly("pendingScreen");
+      else if(g.reason==="expired" || g.reason==="inactive") showOnly("expiredScreen");
+      else showOnly("authScreen");
+      return;
+    }
+    // مسموح: اعرض شاشة الدخول/الترحيب ثم المستخدم يضغط "دخول"
+    showOnly("welcomeScreen");
+  }catch(e){
+    showOnly("authScreen");
+    setMsg("authMsg","❌ تأكد من مفاتيح Supabase وسياسات RLS.");
+  }
+});
+
+(function(){
+  function ensureQrLib(){
+    if(typeof QRCode !== "undefined") return;
+    var s=document.createElement("script");
+    s.src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js";
+    s.onload=function(){ try{ generateCard(); }catch(e){} };
+    document.head.appendChild(s);
+  }
+  ensureQrLib();
+})();
+</script>
+
+<!-- html2canvas for PNG -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+<script>
+function $(id){ return document.getElementById(id); }
+function safe(s){ return String(s||"").replace(/\r?\n/g," ").trim(); }
+
+/* ✅ دخول التطبيق (global + backup) */
+function enterApp(){
+  var w=$("welcomeScreen"), a=$("mainApp");
+  if(w) w.style.display="none";
+  if(a) a.style.display="block";
+  requestAnimationFrame(function(){ generateCard(); });
+}
+document.addEventListener("DOMContentLoaded", function(){
+  var btn=$("enterBtn");
+  if(btn) btn.onclick = enterApp;
+});
+
+/* المجالات + Pattern */
+var templateEmojis={
+  "":"🏷️", vet:"🐾", hair:"✂️", law:"⚖️", clinic:"🩺", pharmacy:"💊", dentist:"🦷",
+  mechanic:"🔧", plumber:"🚰", construction:"🧱", translation:"🌐", glass:"🪟", oilSale:"🛢️",
+  wedding:"💍", sweets:"🍬", restaurant:"🍽️", tech:"💻", realestate:"🏠", education:"📚"
+};
+function svgPatternDataUrl(symbol, colorRGBA){
+  var svg = ''
+    + '<svg xmlns="http://www.w3.org/2000/svg" width="90" height="90">'
+    + '<rect width="90" height="90" fill="transparent"/>'
+    + '<text x="12" y="38" font-size="34" fill="'+colorRGBA+'" opacity="0.9">'+symbol+'</text>'
+    + '<text x="46" y="76" font-size="34" fill="'+colorRGBA+'" opacity="0.9">'+symbol+'</text>'
+    + '</svg>';
+  return 'url("data:image/svg+xml;utf8,' + encodeURIComponent(svg) + '")';
+}
+function updateTemplate(){
+  var selected = $("templateSelect").value;
+  var emoji = templateEmojis[selected] || "🏷️";
+  $("templateEmoji").textContent = emoji;
+  document.documentElement.style.setProperty("--leftPattern",  svgPatternDataUrl(emoji,"rgba(0,0,0,0.85)"));
+  document.documentElement.style.setProperty("--rightPattern", svgPatternDataUrl(emoji,"rgba(255,255,255,0.90)"));
+}
+
+/* ألوان */
+function updateColors(){
+  document.documentElement.style.setProperty("--rightBg", $("rightColorSelect").value);
+  document.documentElement.style.setProperty("--leftBg", $("leftColorSelect").value);
+  document.documentElement.style.setProperty("--cardText", $("textColorSelect").value);
+  document.documentElement.style.setProperty("--leftText", $("leftTextColorSelect").value);
+}
+
+/* vCard fallback */
+function buildVCard(){
+  var out="";
+  out+="BEGIN:VCARD\n";
+  out+="VERSION:3.0\n";
+  out+="FN:"+safe($("person").value)+"\n";
+  out+="ORG:"+safe($("company").value)+"\n";
+  out+="TITLE:"+safe($("job").value)+"\n";
+  out+="TEL;TYPE=CELL:"+safe($("phone").value)+"\n";
+  out+="ADR;TYPE=WORK:;;"+safe($("addr").value)+";;;;\n";
+  var fb = safe($("fb").value);
+  if(fb){
+    var url = /^https?:\/\//i.test(fb) ? fb : ("https://facebook.com/"+fb);
+    out+="URL:"+url+"\n";
+  }
+  out+="NOTE:"+safe($("desc").value)+"\n";
+  out+="END:VCARD";
+  return out;
+}
+function buildQRText(){
+  var any = safe($("qrAny").value);
+  if(any){
+    if(!/^https?:\/\//i.test(any)) any = "https://" + any;
+    return any;
+  }
+  return buildVCard();
+}
+
+/* QR rendering */
+function renderQR(text){
+  var box = $("qrcode");
+  if(!box) return;
+  box.innerHTML="";
+  if(typeof QRCode === "undefined"){
+    $("qrNote").textContent="⚠️ مكتبة QR غير محملة. ضع qrcode.min.js بجانب الصفحة أو فعّل الإنترنت.";
+    return;
+  }
+  new QRCode(box, {
+    text:text,
+    width:120,
+    height:120,
+    correctLevel: QRCode.CorrectLevel.H
+  });
+  $("qrNote").textContent="✅ QR جاهز.";
+}
+
+/* Update Card */
+function generateCard(){
+  // لا تعمل قبل الدخول
+  if(!$("mainApp") || $("mainApp").style.display==="none") return;
+
+  $("companyDisplay").textContent  = safe($("company").value) || "اسم المؤسسة";
+  $("companyDisplay2").textContent = safe($("company2").value) || "";
+  $("personDisplay").textContent   = safe($("person").value) || "اسم الشخص";
+  $("jobDisplay").textContent      = safe($("job").value) || "المنصب";
+
+  $("descDisplay").innerHTML = (safe($("desc").value) || "وصف الخدمات").replace(/\n/g,"<br>");
+  $("phoneDisplay").textContent = safe($("phone").value) || "";
+  $("fbDisplay").textContent    = safe($("fb").value) || "";
+  $("addrDisplay").textContent  = safe($("addr").value) || "";
+
+  updateTemplate();
+  updateColors();
+  renderQR(buildQRText());
+}
+
+/* Events: تحديث تلقائي */
+function bindAuto(id, evt){
+  var el=$(id);
+  if(!el) return;
+  el.addEventListener(evt, generateCard);
+}
+[
+  ["templateSelect","change"],["qrAny","input"],["company","input"],["company2","input"],
+  ["person","input"],["job","input"],["phone","input"],["fb","input"],["addr","input"],["desc","input"],
+  ["rightColorSelect","change"],["leftColorSelect","change"],["textColorSelect","change"],["leftTextColorSelect","change"]
+].forEach(function(x){ bindAuto(x[0],x[1]); });
+
+/* Logo */
+$("logoInput").addEventListener("change", function(e){
+  var file = e.target.files && e.target.files[0];
+  if(!file) return;
+  var reader = new FileReader();
+  reader.onload = function(){
+    $("logoPreview").src = reader.result;
+    $("logoPreview").style.display="block";
+    generateCard();
+  };
+  reader.readAsDataURL(file);
+});
+
+/* Bottom buttons */
+$("updateBtn").addEventListener("click", generateCard);
+
+$("downloadBtn").addEventListener("click", function(){
+  var card = $("card");
+  html2canvas(card, { scale: 3 }).then(function(canvas){
+    var a=document.createElement("a");
+    a.download="business-card.png";
+    a.href=canvas.toDataURL("image/png");
+    a.click();
+  });
+});
+
+$("shareBtn").addEventListener("click", function(){
+  var url = safe($("qrAny").value);
+  if(!url){
+    alert("ضع رابط في خانة QR للمشاركة (أو سيبها فاضية ليكون vCard).");
+    return;
+  }
+  if(!/^https?:\/\//i.test(url)) url="https://"+url;
+  if(navigator.share){
+    navigator.share({title:"Ali Cards", url:url});
+  }else{
+    if(navigator.clipboard) navigator.clipboard.writeText(url);
+    alert("✅ تم نسخ الرابط");
+  }
+});
+</script>
+
+</body>
+</html>
